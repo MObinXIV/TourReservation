@@ -1,0 +1,23 @@
+{
+  "name": "tourreservation",
+  "version": "1.0.0",
+  "description": "tour reserving system like Booking",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MObinXIV/TourReservation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MObinXIV/TourReservation/issues"
+  },
+  "homepage": "https://github.com/MObinXIV/TourReservation#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
