@@ -1,6 +1,6 @@
 const mongoose  = require("mongoose");
 
-const tourModel = new mongoose.Schema(
+const tourSchema = new mongoose.Schema(
     {
         name:{
             type: String,
