@@ -21,7 +21,7 @@ exports.getAllTours = async(req,res)=>{
     
     try {
         //Build query
-        // 1) filtering
+        // 1a) filtering
         const queryObj={...req.query}; // get the query object destructured
 
         // Creating an array of all of fields we want to exclude
@@ -36,13 +36,22 @@ exports.getAllTours = async(req,res)=>{
 
             console.log(req.query,queryObj);
 
-            // 2)advanced filtering
+            // 1b)advanced filtering
             let queryStr = JSON.stringify(queryObj) ;//make the query object as string
             // now we wanna replace any lt,lte,gt,gte with $ in front of each 
            queryStr= queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>`$${match}`);
-            console.log(JSON.parse(queryStr));
 
-        const query = Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr)); // we use it like that to chain more queries on it
+        //2)Sorting
+        if(req.query.sort){
+            const sortBy=req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);//sort according to the query I give
+        }
+
+        // adding a default sorting 
+        else{
+            query=query.sort('-createdAt');//sorting by the newly createdAt fields
+        }
 
         // Execute Query
         const tours = await query;
