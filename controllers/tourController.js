@@ -34,8 +34,7 @@ exports.getAllTours = async(req,res)=>{
         excludedFields.forEach(element => {
             delete(queryObj[element]);});
 
-            console.log(req.query,queryObj);
-
+            
             // 1b)advanced filtering
             let queryStr = JSON.stringify(queryObj) ;//make the query object as string
             // now we wanna replace any lt,lte,gt,gte with $ in front of each 
@@ -59,8 +58,10 @@ exports.getAllTours = async(req,res)=>{
             query = query.select(fields);
         }
         else{
-            query=query.select(-__v);//eliminate it
+            query = query.select('-__v');//eliminate it
         }
+
+        // 4) Pagination
         // Execute Query
         const tours = await query;
 
