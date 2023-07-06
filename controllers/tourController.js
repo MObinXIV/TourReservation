@@ -21,6 +21,7 @@ exports.getAllTours = async(req,res)=>{
     
     try {
         //Build query
+        // 1) filtering
         const queryObj={...req.query}; // get the query object destructured
 
         // Creating an array of all of fields we want to exclude
@@ -35,7 +36,13 @@ exports.getAllTours = async(req,res)=>{
 
             console.log(req.query,queryObj);
 
-        const query =  Tour.find(queryObj);
+            // 2)advanced filtering
+            let queryStr = JSON.stringify(queryObj) ;//make the query object as string
+            // now we wanna replace any lt,lte,gt,gte with $ in front of each 
+           queryStr= queryStr.replace(/\b(gte|gt|lte|lt)\b/g,match=>`$${match}`);
+            console.log(JSON.parse(queryStr));
+
+        const query = Tour.find(JSON.parse(queryStr));
 
         // Execute Query
         const tours = await query;
