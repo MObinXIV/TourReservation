@@ -1,5 +1,13 @@
 const Tour = require('../models/tourModel');
 
+// middleware to handle the top-5-cheap route 
+exports.aliasTopTours= (req,res,next)=>{
+    req.query.limit='5';
+    req.query.sort  = '-ratingsAverage,price';
+    req.query.fields ='name,ratingsAverage,price,summary,difficulty';
+    next();
+}
+
 exports.createTour = async (req,res)=>{
     try {
         const newTour = await Tour.create(req.body);
