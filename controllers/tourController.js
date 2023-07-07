@@ -50,6 +50,7 @@ exports.getAllTours = async(req,res)=>{
         // adding a default sorting 
         else{
             query=query.sort('-createdAt');//sorting by the newly createdAt fields
+            // query = query.sort('-price');
         }
 
         // 3) field limiting
@@ -62,9 +63,28 @@ exports.getAllTours = async(req,res)=>{
         }
 
         // 4) Pagination
+        // http://localhost:3000/api/v1/tours?page=2&limit=10 -> page 2 with limit 10
+
+        const page=req.query.page*1 || 1;//convert it to number & by default get the first page
+        const limit=req.query.limit*1 || 100;
+        const skip=(page-1)* limit;
+        //page=3&limit=10 ,1-10,page1,11-20,page2,21-30,page3
+
+
+        /**
+         * The `skip` variable is calculated by subtracting 1 from the 'page' value and multiplying it by the 'limit'. This calculates the number of documents to skip in the query based on the current page and the specified limit. For example, if 'page' is 3 and 'limit' is 10, the skip value will be 20, indicating that the first 20 documents should be skipped.
+         */
+        query=query.skip(skip).limit(limit); 
+
+        if(req.query.page){
+            const numTours = await Tour.countDocuments();//query to count the number of documents
+            if(skip>=numTours)
+            throw new Error(`this page doesn't exist`);
+        }
+
         // Execute Query
         const tours = await query;
-
+        //query.sort().select().skip().limit()
         // send response
         res.status(200).json({
             status:'success',
