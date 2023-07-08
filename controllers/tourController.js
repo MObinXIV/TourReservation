@@ -117,7 +117,8 @@ exports.getTourStats = async(req, res)=>{
         },
         {
             $group:{
-                _id:'$difficulty', //here it 'll give me the statistics for every difficulty
+                _id:'$ratingsAverage',
+                // _id:'$difficulty', //here it 'll give me the statistics for every difficulty
                 /*
                 * {
     "status": "success",
