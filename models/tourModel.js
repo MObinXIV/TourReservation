@@ -60,6 +60,10 @@ const tourSchema = new mongoose.Schema(
     }
 );
 
+// use the virtual property to get the duration in week
+tourSchema.virtual('durationWeeks').get(function(){
+    return this/7;
+})
 
 const Tour = mongoose.model('Tour',tourSchema);
 
