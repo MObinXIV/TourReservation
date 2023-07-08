@@ -58,11 +58,17 @@ const tourSchema = new mongoose.Schema(
         },
         startDates:[Date]
     }
+    ,
+    {
+        toJSON:{virtuals:true}, // each time we get json data we get virtuals
+        toObject: { virtuals: true }
+    }
 );
 
 // use the virtual property to get the duration in week
+/// note that , we cannot query it also as it doesn't part of db
 tourSchema.virtual('durationWeeks').get(function(){
-    return this/7;
+    return this.duration/7;
 })
 
 const Tour = mongoose.model('Tour',tourSchema);
