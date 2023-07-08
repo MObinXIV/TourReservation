@@ -209,11 +209,22 @@ exports.getMonthlyPlan=async(req,res)=>{
                 $group:{
                     _id:{$month:'$startDates'}, // extracting the month , using mongoDb feature hahaha
                     //count the amount of tours that happens in a certain month
-                    numToursStart:{$sum:1}
+                    numToursStart:{$sum:1},
+                    //create an array of tours
+                    tours:{$push:'$name'} // push the name of the tour
 
+                },
+               
+            }
+            ,
+            {
+                $addFields: { month: '$_id' }
+            },
+            {
+                $project:{
+                    _id:0
                 }
             }
-
 
         ]);
         res.status(200).json({
