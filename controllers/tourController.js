@@ -113,7 +113,7 @@ exports.getTourStats = async(req, res)=>{
     try {
     const stats= await Tour.aggregate([
         {
-            $match: {ratingsAverage: {$gte: 4.5}}
+            $match: {ratingsAverage: {$gte: 4.5}} // used to select documents or just do a query
         },
         {
             $group:{
@@ -185,6 +185,39 @@ exports.getTourStats = async(req, res)=>{
         res.status(400).json({
             status:'fail',
             message:'Invalid data sent!'
+        });
+    }
+}
+
+exports.getMonthlyPlan=async(req,res)=>{
+    try {
+        const year=req.params.year*1;
+
+        const plan = await Tour.aggregate([
+            {
+                $unwind:'$startDates' // make us only have one document for each date
+            },
+            {
+                $match:{
+                    startDates:{
+                        $gte:new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`)
+                    }
+                }
+            }
+
+
+        ]);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                plan
+            }
         })
+    } catch (error) {
+        res.status(400).json({
+            status: 'fail',
+            message: 'Invalid data sent!'
+        });
     }
 }
