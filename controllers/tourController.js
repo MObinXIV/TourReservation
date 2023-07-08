@@ -162,10 +162,15 @@ exports.getTourStats = async(req, res)=>{
                 avgPrice: {$avg:'$price'},
                 minPrice: {$min:'$price'},
                 maxPrice: {$max:'$price'}
+                /// important note -> these names are now the names we use not the old real names
             }
+        },
+        {
+            $sort:{avgPrice:1}
+        },
+        {
+            $match:{_id:{$ne:'EASY'}} // excluding the easy
         }
-
-
     ])
 
         res.status(200).json({
