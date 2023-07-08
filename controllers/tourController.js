@@ -204,6 +204,14 @@ exports.getMonthlyPlan=async(req,res)=>{
                         $lte: new Date(`${year}-12-31`)
                     }
                 }
+            },
+            {
+                $group:{
+                    _id:{$month:'$startDates'}, // extracting the month , using mongoDb feature hahaha
+                    //count the amount of tours that happens in a certain month
+                    numToursStart:{$sum:1}
+
+                }
             }
 
 
