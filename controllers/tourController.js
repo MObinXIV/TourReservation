@@ -117,7 +117,43 @@ exports.getTourStats = async(req, res)=>{
         },
         {
             $group:{
-                _id:null, // we want everything in one group
+                _id:'$difficulty', //here it 'll give me the statistics for every difficulty
+                /*
+                * {
+    "status": "success",
+    "data": {
+        "stats": [
+            {
+                "_id": "difficult",
+                "numTours": 2,
+                "numRatings": 41,
+                "avgRating": 4.6,
+                "avgPrice": 1997,
+                "minPrice": 997,
+                "maxPrice": 2997
+            },
+            {
+                "_id": "easy",
+                "numTours": 4,
+                "numRatings": 159,
+                "avgRating": 4.675,
+                "avgPrice": 1272,
+                "minPrice": 397,
+                "maxPrice": 1997
+            },
+            {
+                "_id": "medium",
+                "numTours": 3,
+                "numRatings": 70,
+                "avgRating": 4.8,
+                "avgPrice": 1663.6666666666667,
+                "minPrice": 497,
+                "maxPrice": 2997
+            }
+        ]
+    }
+}
+                * */
                 numTours:{$sum:1},
                 numRatings: {$sum:'$ratingsQuantity'},
                 //calculate the averageRating
