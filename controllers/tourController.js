@@ -224,6 +224,12 @@ exports.getMonthlyPlan=async(req,res)=>{
                 $project:{
                     _id:0
                 }
+            },
+            {
+                $sort:{numToursStart:-1}
+            },
+            {
+                $limit:12
             }
 
         ]);
