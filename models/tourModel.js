@@ -1,5 +1,5 @@
 const mongoose  = require("mongoose");
-
+const slugify = require('slugify');
 const tourSchema = new mongoose.Schema(
     {
         name:{
@@ -8,6 +8,7 @@ const tourSchema = new mongoose.Schema(
             unique:true,
             trim:true
         },
+        slug:String,
         duration:{
             type:Number,
             require:[true,'A Tour must have a duration']
@@ -69,6 +70,29 @@ const tourSchema = new mongoose.Schema(
 /// note that , we cannot query it also as it doesn't part of db
 tourSchema.virtual('durationWeeks').get(function(){
     return this.duration/7;
+})
+
+
+/**
+ * * important :
+ * * pre running before a certain event
+ * * post ->running after
+ * * and the event is save event
+ * * and we have to reach this 
+ */
+// Doc middleware(access the document) -> it runs before .save() & .create()
+//* pre running before a certain event
+tourSchema.pre('save',function(next){
+
+    this.slug=slugify(this.name,{lower:true});
+    next();
+});
+
+// get the document after it created with all it's data
+//* * post ->running after
+tourSchema.post('save',function(doc,next){
+    console.log(doc);
+    next();
 })
 
 const Tour = mongoose.model('Tour',tourSchema);
