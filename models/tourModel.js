@@ -57,7 +57,11 @@ const tourSchema = new mongoose.Schema(
             default:Date.now(),
             select:false
         },
-        startDates:[Date]
+        startDates:[Date],
+        secretTour:{
+            type:Boolean,
+            default:false
+        }
     }
     ,
     {
@@ -90,8 +94,28 @@ tourSchema.pre('save',function(next){
 
 // get the document after it created with all it's data
 //* * post ->running after
-tourSchema.post('save',function(doc,next){
-    console.log(doc);
+// tourSchema.post('save',function(doc,next){
+//     console.log(doc);
+//     next();
+// })
+
+//Query middleware
+/**
+ * 
+ * we use it to hide the secret tours
+ * we handle each find situation with regex
+ */
+tourSchema.pre(/^find/,function(next)
+// tourSchema.pre('find', function (next)
+{
+    this.find({secretTour:{$ne:true}});
+    this.start= Date.now();
+    next();
+});
+
+tourSchema.post(/^find/,function(docs,next){
+    console.log(`Query take ${Date.now()-this.start} milliseconds!`);
+    console.log(docs);
     next();
 })
 
