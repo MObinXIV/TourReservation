@@ -88,6 +88,7 @@ tourSchema.virtual('durationWeeks').get(function(){
 //* pre running before a certain event
 tourSchema.pre('save',function(next){
 
+    // this -> here points to the current document
     this.slug=slugify(this.name,{lower:true});
     next();
 });
@@ -108,6 +109,7 @@ tourSchema.pre('save',function(next){
 tourSchema.pre(/^find/,function(next)
 // tourSchema.pre('find', function (next)
 {
+    // this -> points to the current query
     this.find({secretTour:{$ne:true}});
     this.start= Date.now();
     next();
@@ -116,6 +118,16 @@ tourSchema.pre(/^find/,function(next)
 tourSchema.post(/^find/,function(docs,next){
     console.log(`Query take ${Date.now()-this.start} milliseconds!`);
     console.log(docs);
+    next();
+});
+
+// Aggregation middleware
+
+tourSchema.pre('aggregate',function(next){
+    // this -> points to the current aggregation option
+    
+    // remove the docs from the aggregation
+    this.pipeline().unshift({$match:{secretTour:{$ne:true}}});
     next();
 })
 
