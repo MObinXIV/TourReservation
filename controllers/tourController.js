@@ -1,6 +1,6 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
-
+const catchAsync = require('../utils/catchAsync');
 // middleware to handle the top-5-cheap route 
 exports.aliasTopTours= (req,res,next)=>{
     req.query.limit='5';
@@ -9,8 +9,7 @@ exports.aliasTopTours= (req,res,next)=>{
     next();
 }
 
-exports.createTour = async (req,res)=>{
-    try {
+exports.createTour =catchAsync (async (req,res,next)=>{
         const newTour = await Tour.create(req.body);
         res.status(201).json({
             status:'success',
@@ -18,20 +17,13 @@ exports.createTour = async (req,res)=>{
                 tour:newTour
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:error
-        })
-    }
-}
+})
 
 
 
 
-exports.getAllTours = async(req,res)=>{
+exports.getAllTours = catchAsync(async(req,res,next)=>{
     
-    try {
         // build my query
         const features = new APIFeatures(Tour.find(), req.query)
             .filter()
@@ -47,17 +39,10 @@ exports.getAllTours = async(req,res)=>{
                 tours
             }
         });
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:'Invalid data sent!'
-        })
-    }
-};
+});
 
-exports.getTour = async(req,res)=>{
+exports.getTour =catchAsync (async(req,res,next)=>{
 
-    try {
         const tour = await Tour.findById(req.params.id);
         res.status(200).json({
             status:'success',
@@ -66,17 +51,9 @@ exports.getTour = async(req,res)=>{
             }
         })
 
-    } catch (error) {
+});
 
-        res.status(400).json({
-            status:'fail',
-            message:'Invalid data sent!'
-        })
-    }
-}
-
-exports.updateTour = async (req,res)=>{
-    try {
+exports.updateTour =catchAsync (async (req,res,next)=>{
         const tour = await Tour.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
 
         res.status(200).json({
@@ -85,31 +62,17 @@ exports.updateTour = async (req,res)=>{
                 tour
             }
         })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:'Invalid data sent!'
-        })
-    }
-}
+});
 
-exports.deleteTour = async(req,res)=>{
-    try {
+exports.deleteTour = catchAsync (async(req,res)=>{
         await Tour.findByIdAndDelete(req.params.id);
         res.status(204).json({
             status:'Success',
             data:null
-        })
-    } catch (error) {
-        res.status(400).json({
-            status:'fail',
-            message:'Invalid data sent!'
-        })
-    }
-}
+        }); 
+});
 
-exports.getTourStats = async(req, res)=>{
-    try {
+exports.getTourStats =catchAsync (async(req, res)=>{
     const stats= await Tour.aggregate([
         {
             $match: {ratingsAverage: {$gte: 4.5}} // used to select documents or just do a query
@@ -118,42 +81,6 @@ exports.getTourStats = async(req, res)=>{
             $group:{
                 // _id:'$ratingsAverage',
                 _id:{$toUpper:'$difficulty'}, //here it 'll give me the statistics for every difficulty
-                /*
-                * {
-    "status": "success",
-    "data": {
-        "stats": [
-            {
-                "_id": "difficult",
-                "numTours": 2,
-                "numRatings": 41,
-                "avgRating": 4.6,
-                "avgPrice": 1997,
-                "minPrice": 997,
-                "maxPrice": 2997
-            },
-            {
-                "_id": "easy",
-                "numTours": 4,
-                "numRatings": 159,
-                "avgRating": 4.675,
-                "avgPrice": 1272,
-                "minPrice": 397,
-                "maxPrice": 1997
-            },
-            {
-                "_id": "medium",
-                "numTours": 3,
-                "numRatings": 70,
-                "avgRating": 4.8,
-                "avgPrice": 1663.6666666666667,
-                "minPrice": 497,
-                "maxPrice": 2997
-            }
-        ]
-    }
-}
-                * */
                 numTours:{$sum:1},
                 numRatings: {$sum:'$ratingsQuantity'},
                 //calculate the averageRating
@@ -178,18 +105,10 @@ exports.getTourStats = async(req, res)=>{
                 stats
             }
         })
-    }
-    catch (error) {
+    
+});
 
-        res.status(400).json({
-            status:'fail',
-            message:'Invalid data sent!'
-        });
-    }
-}
-
-exports.getMonthlyPlan=async(req,res)=>{
-    try {
+exports.getMonthlyPlan=catchAsync (async(req,res,next)=>{
         const year=req.params.year*1;
 
         const plan = await Tour.aggregate([
@@ -237,11 +156,5 @@ exports.getMonthlyPlan=async(req,res)=>{
             data: {
                 plan
             }
-        })
-    } catch (error) {
-        res.status(400).json({
-            status: 'fail',
-            message: 'Invalid data sent!'
         });
-    }
-}
+});
