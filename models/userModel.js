@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     password:{
         type:String,
         required: [true, 'please,provide a password'],
-        minLength:8
+        minLength:8,
+        select:false
     },
     passwordConfirm: {
         type: String,
@@ -30,6 +31,7 @@ const userSchema = new mongoose.Schema({
        }
     },
     photo:String,
+    passwordChangedAt:Date
 });
 
 userSchema.pre('save',async function(next){
@@ -42,7 +44,25 @@ userSchema.pre('save',async function(next){
     // delete password confirm field
     this.passwordConfirm=undefined;
     next();
-})
+});
+
+// use instance method -> this is a method available in all the docs in certain collection
+// function to check the correctness of the password
+userSchema.methods.correctPassword =async function(candidatePassword,userPassword){
+    return await bcrypt.compare(candidatePassword,userPassword);
+}
+
+userSchema.methods.changesPasswordAfter = function(JWTTimestamp){
+
+    if(this.passwordChangedAt){
+
+        const changedTimeStamp= parseInt(this.passwordChangedAt.getTime()/1000,10);
+        console.log(this.passwordChangedAt, JWTTimestamp);
+        return JWTTimestamp < changedTimeStamp;
+    }
+    return false; // by default user don't change his pass first
+}
+
 const User= mongoose.model('User',userSchema);
 
 module.exports=User;
