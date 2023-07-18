@@ -55,6 +55,13 @@ userSchema.pre('save',async function(next){
     next();
 });
 
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.isNew) return next();
+
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
 // use instance method -> this is a method available in all the docs in certain collection
 // function to check the correctness of the password
 userSchema.methods.correctPassword =async function(candidatePassword,userPassword){
