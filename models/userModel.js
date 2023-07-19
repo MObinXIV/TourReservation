@@ -40,7 +40,12 @@ const userSchema = new mongoose.Schema({
     
     passwordChangedAt:Date,
     passwordResetToken: String,
-    passwordResetExpires:Date
+    passwordResetExpires:Date,
+    active:{
+        type:Boolean,
+        default:true,
+        select:false
+    }
 });
 
 userSchema.pre('save',async function(next){
@@ -62,6 +67,11 @@ userSchema.pre('save', function (next) {
     next();
 });
 
+userSchema.pre(/^find/,function(next){
+    // this point to the current query
+    this.find({active:{$ne:false}});
+    next();
+})
 // use instance method -> this is a method available in all the docs in certain collection
 // function to check the correctness of the password
 userSchema.methods.correctPassword =async function(candidatePassword,userPassword){
@@ -79,13 +89,20 @@ userSchema.methods.changesPasswordAfter = function(JWTTimestamp){
     return false; // by default user don't change his pass first
 }
 
-userSchema.methods.createPasswordResetToken = function(){
+userSchema.methods.createPasswordResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString('hex');
 
-    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    this.passwordResetExpires = Date.now()+10*60*1000;
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    console.log({ resetToken }, this.passwordResetToken);
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
     return resetToken;
-}
+};
 
 const User= mongoose.model('User',userSchema);
 

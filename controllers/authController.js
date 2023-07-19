@@ -30,8 +30,10 @@ exports.signup=catchAsync(async(req,res)=>{
         password:req.body.password,
         passwordConfirm:req.body.passwordConfirm,
         passwordChangedAt: req.body.passwordChangedAt,
-        role:req.body.role
-    });
+        role:req.body.role,
+        // req.body
+
+});
 
     const token = signToken(newUser._id);
 
