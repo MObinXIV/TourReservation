@@ -28,7 +28,8 @@ app.use(express.json({limit:'10kb'}));
 
 // data Sanitization for nosql injection
 app.use(mongoSanitize())
-
+// Against xss
+app.use(xss);
 
 // 3) 
 app.use('/api/v1/tours',tourRouter);
