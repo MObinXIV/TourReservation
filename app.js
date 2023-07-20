@@ -1,5 +1,6 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
+const helmet=require('helmet');
 const AppError= require('./utils/appError');
 const globalErrHandler= require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
@@ -9,18 +10,23 @@ const app  = express();
 
 // 1) Global middleware 
 
+// Set security http headers 
+app.use(helmet())
 // allow 100 request from one ip in hour
+// Limit requests from same API 
 const limiter = rateLimit({
     max:100,
     windowMs: 60*60*1000,
-    message:'Too many requests from tis Ip,please try again in an hour'
+    message:'Too many requests from this Ip,please try again in an hour'
 });
 
 app.use('/api',limiter); //affect all the routes starts with /api 
 
-app.use(express.json());
+// body parser, reading data from the body and req.body
+app.use(express.json({limit:'10kb'}));
 
 
+// 3) 
 app.use('/api/v1/tours',tourRouter);
 app.use('/api/v1/users', userRouter);
 
