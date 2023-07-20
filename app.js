@@ -7,12 +7,28 @@ const globalErrHandler= require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const xss=require('xss-clean');
+const hpp=require('hpp');
 const app  = express();
 
 // 1) Global middleware 
 
 // Set security http headers 
 app.use(helmet())
+
+// prevent parameter pollution
+app.use(
+    hpp({
+        whitelist: [
+            'duration',
+            'ratingsQuantity',
+            'ratingsAverage',
+            'maxGroupSize',
+            'difficulty',
+            'price'
+        ]
+    })
+);
+
 // allow 100 request from one ip in hour
 // Limit requests from same API 
 const limiter = rateLimit({
